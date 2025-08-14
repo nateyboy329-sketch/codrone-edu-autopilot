@@ -107,4 +107,3 @@ else:
     
         
 drone.close()
-drone.close()
