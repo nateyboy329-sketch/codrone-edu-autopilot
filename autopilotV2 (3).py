@@ -7,7 +7,7 @@ drone = Drone()
 drone.pair()
 drone.controller_clear_screen()
 color = drone.get_colors()
-def emrgency():
+def emergency():
     x = drone.get_accel_x()
     if x > 15:
         drone.emergency_stop()
