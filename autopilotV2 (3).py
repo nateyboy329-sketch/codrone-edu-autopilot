@@ -1,11 +1,3 @@
-# Import the necessary module from CoDrone EDU
-from codrone_edu.drone import *
-
-# Initialize and create a Drone instance
-drone = Drone()
-
-# Establish a connection to the drone and the controller
-drone.pair()
 #code made by Natheniel Robinson, available for educational and personal use. please credit me.
 from codrone_edu.drone import *
 import random
@@ -15,16 +7,53 @@ drone = Drone()
 drone.pair()
 drone.controller_clear_screen()
 color = drone.get_colors()
+def emrgency():
+    x = drone.get_accel_x()
+    if x > 15:
+        drone.emergency_stop()
 
-distances = [0, 0, 0]
-#ditances when detecting wall
+    if x < -15:
+        drone.emergency_stop()
+    y = drone.get_accel_y()
+    if y > 15:
+        drone.emergency_stop()
 
-if 'red' in color:      
-    print(color)
+    if y < -15:
+        drone.emergency_stop()
+def turn():
+    distances = [0, 0, 0]
+    for i in range(3):
+        drone.turn_right(90)
+        distances[i] = drone.get_front_range()
+
+    drone.turn_right(90)
+    if distances[0] == max(distances):
+            drone.turn_right(90)
+            print("turning right")
+    elif distances[1] == max(distances):
+        drone.turn_right(180)
+        print("turning around")
+    else:
+        drone.turn_left(90)
+        print("turning left")
+            
+            
+def safety_feature():
+    drone.set_drone_LED(255, 0, 0, 800)
+    print("safety feature; put on red pad or surface to bypass.")
+    drone.controller_buzzer(700, 4000)
+    drone.drone_buzzer_sequence("error")
+def startup():
     drone.controller_buzzer(600, 200)
     drone.controller_buzzer(900, 1000)
     drone.drone_buzzer_sequence("success")
     drone.takeoff()
+#ditances when detecting wall
+
+if 'red' in color:      
+    startup()
+
+
    
     image = drone.controller_create_canvas() 
     time.sleep(1)
@@ -54,18 +83,7 @@ if 'red' in color:
 
 
         #turn systems
-        for i in range(3):
-            drone.turn_right(90)
-            distances[i] = drone.get_front_range()
-
-        drone.turn_right(90)
-        if distances[0] == max(distances):
-            drone.turn_right(90)
-        elif distances[1] == max(distances):
-            drone.turn_right(180)
-        else:
-            drone.turn_left(90)
-            
+        turn()
             #hold height and check land
         if brn < 11:
             drone.emergency_stop()
@@ -76,34 +94,16 @@ if 'red' in color:
             drone.go("up", 30, 1)
         variable = random.randint(1, 3)
         drone.set_drone_LED(0, 255, 0, 800)
-
-        
-            
-        
-    
+        emergency()
         drone.set_drone_LED(255, 0, 0, 800)
         drone.drone_buzzer_sequence("error")
         #emergency stop
-        x = drone.get_accel_x()
-        if x > 15:
-            drone.emergency_stop()
-
-        if x < -15:
-            drone.emergency_stop()
-        y = drone.get_accel_y()
-        if y > 15:
-            drone.emergency_stop()
-
-        if y < -15:
-            drone.emergency_stop()
+       
       
               
       
 else:
-    drone.set_drone_LED(255, 0, 0, 800)
-    print("safety feature; put on red pad or surface to bypass.")
-    drone.controller_buzzer(700, 4000)
-    drone.drone_buzzer_sequence("error")
+    safety_feature()
     
         
 drone.close()
